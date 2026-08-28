@@ -141,10 +141,8 @@ function App() {
         ))}
       </div>
       <div className="horseImage">
-        {/*<canvas style={{position: 'absolute', left: '4em'}} ref={canvasRef} />*/}
         <canvas ref={canvasRef} />
       </div>
-      {/*<div style={{position: 'absolute', bottom: '0'}} className="footer">*/}
       <div className="footer">
         <label className="checkboxLabel">
             <input
