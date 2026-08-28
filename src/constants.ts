@@ -1,6 +1,6 @@
 export const CANVAS_WIDTH = 1042
-export const CANVAS_HEIGHT = 640
-export const TOP_TEXT_AREA_HEIGHT = 160
+export const CANVAS_HEIGHT = 700
+export const TOP_TEXT_AREA_HEIGHT = 100
 export const DIVIDER_WIDTH = 3
 
 export const MIN_PARTS = 1

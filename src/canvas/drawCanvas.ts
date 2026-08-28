@@ -23,7 +23,7 @@ function drawTopTextArea(
   topText: string,
   width: number
 ): void {
-  ctx.fillStyle = 'grey'
+  ctx.fillStyle = 'white'
   ctx.fillRect(0, 0, width, TOP_TEXT_AREA_HEIGHT)
 
   ctx.fillStyle = 'black'
