@@ -2,6 +2,7 @@
     display: grid;
     grid-template-rows: min-content min-content 1fr min-content;
     /*justify-items: center;*/
+    justify-items: start;
     min-height: 0;
     box-sizing: border-box;
     text-align: center;
