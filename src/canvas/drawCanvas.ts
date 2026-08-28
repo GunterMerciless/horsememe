@@ -3,6 +3,7 @@ import {
   CANVAS_HEIGHT,
   TOP_TEXT_AREA_HEIGHT,
   DIVIDER_WIDTH,
+  MAX_PARTS_NO_STRETCH,
 } from '../constants'
 import { getFontSizeToFit, drawTextWithStroke } from './textUtils'
 
@@ -19,21 +20,22 @@ export interface DrawCanvasParams {
  */
 function drawTopTextArea(
   ctx: CanvasRenderingContext2D,
-  topText: string
+  topText: string,
+  width: number
 ): void {
-  ctx.fillStyle = 'white'
-  ctx.fillRect(0, 0, CANVAS_WIDTH, TOP_TEXT_AREA_HEIGHT)
+  ctx.fillStyle = 'grey'
+  ctx.fillRect(0, 0, width, TOP_TEXT_AREA_HEIGHT)
 
   ctx.fillStyle = 'black'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
 
   const padding = 20
-  const availableWidth = CANVAS_WIDTH - padding * 2
+  const availableWidth = width - padding * 2
   const fontSize = getFontSizeToFit(ctx, topText, availableWidth)
   ctx.font = `bold ${fontSize}px Arial`
 
-  const textX = CANVAS_WIDTH / 2
+  const textX = width / 2
   const textY = TOP_TEXT_AREA_HEIGHT / 2
   ctx.fillText(topText, textX, textY)
 }
@@ -45,8 +47,10 @@ function drawSegmentImage(
   ctx: CanvasRenderingContext2D,
   img: HTMLImageElement,
   x: number,
+  x_shift: number,
   sliceWidth: number,
-  imageOffsetY: number
+  imageOffsetY: number,
+  width: number
 ): void {
   ctx.save()
   ctx.beginPath()
@@ -54,13 +58,13 @@ function drawSegmentImage(
   ctx.clip()
   ctx.drawImage(
     img,
-    0,
+    x_shift,
     0,
     img.naturalWidth,
     img.naturalHeight,
     0,
     imageOffsetY,
-    CANVAS_WIDTH,
+    width,
     CANVAS_HEIGHT
   )
   ctx.restore()
@@ -114,31 +118,42 @@ export function drawCanvas(
   if (!ctx) return
 
   const { imageNums, texts, topText, showDividers, getImages } = params
-  const count = imageNums.length
-  const sliceWidth = CANVAS_WIDTH / count
+  const total_count = imageNums.length
+
+  const over_max_count      = total_count > MAX_PARTS_NO_STRETCH ? total_count - MAX_PARTS_NO_STRETCH : 0
+  const under_max_count     = over_max_count > 0 ? MAX_PARTS_NO_STRETCH : total_count
+
+  const sliceWidth = CANVAS_WIDTH / under_max_count // const after MAX_PARTS_NO_STRETCH (10)
+
   const hasTopText = topText.trim().length > 0
   const totalHeight = hasTopText
     ? CANVAS_HEIGHT + TOP_TEXT_AREA_HEIGHT
     : CANVAS_HEIGHT
   const imageOffsetY = hasTopText ? TOP_TEXT_AREA_HEIGHT : 0
 
-  canvas.width = CANVAS_WIDTH
+  canvas.width = over_max_count > 0 ? CANVAS_WIDTH + sliceWidth * over_max_count : CANVAS_WIDTH
   canvas.height = totalHeight
 
-  ctx.fillStyle = 'white'
-  ctx.fillRect(0, 0, CANVAS_WIDTH, totalHeight)
+  ctx.fillStyle = 'grey'
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
 
   if (hasTopText) {
-    drawTopTextArea(ctx, topText)
+    drawTopTextArea(ctx, topText, canvas.width)
   }
 
+
   const imgs = getImages()
-  for (let i = 0; i < count; i++) {
-    const img = imgs[imageNums[i]]
-    if (!img?.complete) continue
+
+  for (let i = 0; i < total_count; i++) {
+
+    var img = imgs[imageNums[i]]
+
+    if (!img?.complete) continue // ???
 
     const x = sliceWidth * i
-    drawSegmentImage(ctx, img, x, sliceWidth, imageOffsetY)
+
+    var x_shift = 0
+    drawSegmentImage(ctx, img, x, x_shift, sliceWidth, imageOffsetY, canvas.width)
 
     if (texts[i]) {
       ctx.save()
@@ -147,7 +162,7 @@ export function drawCanvas(
     }
   }
 
-  if (showDividers && count > 1) {
-    drawDividers(ctx, count, sliceWidth, imageOffsetY)
+  if (showDividers && total_count > 1) {
+    drawDividers(ctx, total_count, sliceWidth, imageOffsetY)
   }
 }

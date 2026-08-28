@@ -13,7 +13,8 @@
     width: var(--canvas-width);
     display: flex;
     gap: 1em; 
-    justify-content: space-between; 
+    justify-content: space-between;
+    margin-top: auto;
 }
 
 .horseImage canvas {

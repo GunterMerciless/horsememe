@@ -121,7 +121,8 @@ function App() {
       <div className="ratings">
         {imageNums.map((num, index) => (
           <div className="ratingsPart" key={index}>
-            <label>Season {index + 1}:</label>
+            <label style={{display: 'inline-block', whiteSpace: 'nowrap'}}>Season {index + 1}:</label>
+            <br />
             <input
               type="number"
               min={MIN_RATING}
@@ -139,12 +140,10 @@ function App() {
           </div>
         ))}
       </div>
-
       <div className="horseImage">
-        <canvas ref={canvasRef} />
+        <canvas style={{position: 'absolute', left: '4em'}} ref={canvasRef} />
       </div>
-
-      <div className="footer">
+      <div style={{position: 'absolute', bottom: '0'}} className="footer">
         <label className="checkboxLabel">
             <input
               type="checkbox"
